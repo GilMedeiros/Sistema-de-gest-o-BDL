@@ -1,0 +1,106 @@
+<%- include('../partials/header.ejs') %>
+<%- include('../partials/nav.ejs') %>
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2>Cliente: <%=customer.name%> | <%=customer.store%></h2>
+        </div>
+        <div class="card-body">
+            <div class="container text-center">
+                <div class="row row-cols-2">
+                  <div class="col"><p>Endereço: <%=customer.adress%></p></div>
+                  <div class="col"><p>Observações: <%=customer.observation%></p></div>
+                  <div class="col"><p>Telefone: <%=customer.phone%></p></div>
+                  <div class="col"><p>Email: <%=customer.email%></p></div>
+                  <div class="col"><p>CPF: <%=customer.cpf%></p></div>
+                  <div class="col"><p>CNPJ: <%=customer.cnpj%></p></div>
+                </div>
+                <div class="d-flex flex-row justify-content-center">
+                    <div class="col-md-auto"><a href="/admin/cliente/editar/<%= customer.id %>" class="btn btn-success">Editar</a></div>
+                    <div class="col-md-auto">
+                      <form style="display: inline;" onsubmit="confirmardelete(event,this)">
+                        <!-- <input type="hidden" name="id" value="<%= customer.id %>"> -->
+                        <button class="btn btn-danger">Excluir</button>
+                      </form>
+                    </div>
+                    <div class="col-md-auto"><a href="/admin/pedidos/novo/<%= customer.id %>" class="btn btn-warning">Criar pedido</a></div>
+                </div>
+              </div>
+        </div>
+        <div class="container py-5">
+            <% customer.orders.forEach(order => { %>
+              <div class="order-box">
+                <div class="order-info">
+                  <div class="mb-3">
+                    <label class="fw-bold">ID do Pedido:</label>
+                    <span><%= order.id %></span>
+                  </div>
+                  <div class="mb-3">
+                    <label class="fw-bold">Data do Pedido:</label>
+                    <span>
+                      <% if (customer.orders.length > 0) { %>
+                        <% const createdAt = order.createdAt; %>
+                        <% const day = createdAt.getDate().toString().padStart(2, '0'); %>
+                        <% const month = (createdAt.getMonth() + 1).toString().padStart(2, '0'); %>
+                        <% const year = createdAt.getFullYear().toString(); %>
+                        <% const hours = createdAt.getHours().toString().padStart(2, '0'); %>
+                        <% const minutes = createdAt.getMinutes().toString().padStart(2, '0'); %>
+                        <%= day %>/<%= month %>/<%= year %> - <%= hours %>:<%= minutes %>
+                      <% } else { %>
+                        Ainda não fez um pedido
+                      <% } %>
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label class="fw-bold">Produtos:</label>
+                  <div class="product-list">
+                    <% const product_list = JSON.parse(order.product_list); %>
+                    <% let totalValue = 0; %>
+                    <% let totalprodutos = 0; %>
+                    <% product_list.forEach(product => { %>
+                      <div class="product-list-item">
+                        <span><%= product.product %> x <%= product.quantity %></span>
+                      </div>
+                      <% totalValue += product.quantity * product.uniPrice; %>
+                      <% totalprodutos += product.quantity; %>
+                    <% }); %>
+                  </div>
+                </div>
+                
+                <div class="order-info">
+                  <div class="mb-3">
+                    <label class="fw-bold">Valor Total:</label>
+                    <span class="total-value">R$ <%= totalValue.toFixed(2) %></span>
+                  </div>
+                </div>
+                <div class="mb-3">
+                    <p>
+                      <% if (order.delivered) { %>
+                        <i class="fas fa-dolly status-icon delivered"></i> Pedido entregue
+                      <% } else { %>
+                        <i class="fas fa-dolly status-icon pending-delivery"></i> Entrega pendente
+                      <% } %>
+                    </p>
+                    <p>
+                        <% if (order.payed) { %>
+                          <i class="fas fa-money-check-alt status-icon paid"></i> Pedido pago
+                        <% } else { %>
+                          <i class="fas fa-money-check-alt status-icon pending-payment"></i> Aguardando pagamento
+                        <% } %>
+                      </p>
+                  </div>
+              </div>
+            <% }); %>
+          </div>
+        
+    </div>
+</div>
+<%- include('../partials/footer.ejs') %>
+<script>
+  function confirmardelete(event,form){
+     var decision =  confirm("Peça ao administrador para revisar esta exclusão.")
+  }
+</script>

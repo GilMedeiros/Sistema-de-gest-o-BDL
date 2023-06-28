@@ -1,0 +1,136 @@
+<%- include('../partials/header.ejs') %>
+<%- include('../partials/nav.ejs') %>
+<div class="container">
+    <div class="card">
+        <div class="card-header"><h2>Todos os pedidos</h2></div>
+        <div class="card-body">
+            <div>
+                <% orders.forEach(order => { %>                                      
+                    <hr>
+                    <div class="row">
+                        <div class="col">
+                            <p>ID do pedido: <%= order.id %></p>
+                            <p id="status-text-<%= order.id %>">Situação de pagamento: <%= order.payed ? 'Pedido pago' : 'Aguardando pagamento' %></p>
+                            <p id="status-textDelivery-<%= order.id %>">Situação de entrega: <%= order.delivered ? 'Pedido entregue' : 'Entrega pendente' %></p>
+                        </div>
+                    </div>
+                    <p>Cliente: <%= order.customer.name %></p>
+                    <p>Estabelecimento: <%= order.customer.store %></p> 
+                    <% const createdAt = order.createdAt; %>
+                        <% const day = createdAt.getDate().toString().padStart(2, '0'); %>
+                        <% const month = (createdAt.getMonth() + 1).toString().padStart(2, '0'); %>
+                        <% const year = createdAt.getFullYear().toString(); %>
+                        <% const hours = createdAt.getHours().toString().padStart(2, '0'); %>
+                        <% const minutes = createdAt.getMinutes().toString().padStart(2, '0'); %>
+                        <% const seconds = createdAt.getSeconds().toString().padStart(2, '0'); %>
+                        <p>Pedido feito em: <%= day %>/<%= month %>/<%= year %> - <%= hours %>:<%= minutes %>:<%= seconds %></p>
+                    <% const product_list = JSON.parse(order.product_list); %>
+                    <% let totalValue = 0; %>
+                    <% let totalprodutos = 0; %>
+                    <p><b>Produtos</b></p>
+                    <% product_list.forEach(product => { %>
+                      <p>Produto: <%= product.product %></p>
+                      <p>Quantidade: <%= product.quantity %></p>
+                      <% totalValue += product.quantity * product.uniPrice; %>
+                      <% totalprodutos += product.quantity %>
+                    <% }); %>
+                    <p>Valor total: <%= totalValue %></p>
+                    <p>total de produtos: <%= totalprodutos %></p>
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-success toggle-payment" data-order-id="<%= order.id %>">
+                                <%= order.payed ?  'Marcar como não pago':'Marcar como pago'  %>
+                              </button>
+                              
+                              <button class="btn btn-success toggle-delivery" data-order-id="<%= order.id %>">
+                                <%= order.delivered ? 'Marcar como não entregue' : 'Marcar como entregue'   %>
+                              </button>
+                              
+                            </td>
+                            <a class="btn btn-success" href="https://www.google.com/maps/search/?api=1&query=<%=encodeURIComponent(order.customer.adress)%>" target="_blank">Ver rota</a>
+                            <a class="btn btn-success">Falar com cliente</a>
+                        </div>
+                    </div>                    
+                  <% }) %>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<%- include('../partials/footer.ejs') %>
+<script>
+ const togglePaymentButtons = document.querySelectorAll('.toggle-payment');
+togglePaymentButtons.forEach(button => {
+  button.addEventListener('click', function() {
+    const orderId = button.getAttribute('data-order-id');
+    const confirmMessage = 'Deseja alterar o status de pagamento do pedido?';
+    if (confirm(confirmMessage)) {
+      togglePaymentStatus(orderId);
+    }
+  });
+});
+
+const toggleDeliveryButtons = document.querySelectorAll('.toggle-delivery');
+toggleDeliveryButtons.forEach(button => {
+  button.addEventListener('click', function() {
+    const orderId = button.getAttribute('data-order-id');
+    const confirmMessage = 'Deseja alterar o status de entrega do pedido?';
+    if (confirm(confirmMessage)) {
+      toggleDeliveryStatus(orderId);
+    }
+  });
+});
+
+function togglePaymentStatus(orderId) {
+  // Requisição AJAX para a rota no servidor
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/admin/toggle-payment-status');
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Atualização bem-sucedida
+      const response = JSON.parse(xhr.responseText);
+      if (response.success) {
+        // Atualize a exibição do botão de pagamento de acordo com a resposta
+        const button = document.querySelector(`.toggle-payment[data-order-id="${orderId}"]`);
+        button.textContent = response.payed ? 'Pedido pago' : 'Aguardando pagamento';
+        button.disabled = true; // Desativa o botão após a alteração
+        // Dentro da função `toggleStatus` do seu código JavaScript
+        const statusText = document.querySelector(`#status-text-${orderId}`);
+        if (statusText) {
+            statusText.textContent = response.payed ? 'Situação de pagamento: Pedido pago' : 'Situação de pagamento: Aguardando pagamento';
+        }
+
+      }
+    }
+  };
+  xhr.send(JSON.stringify({ orderId: orderId }));
+}
+
+function toggleDeliveryStatus(orderId) {
+  // Requisição AJAX para a rota no servidor
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/admin/toggle-delivery-status');
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Atualização bem-sucedida
+      const response = JSON.parse(xhr.responseText);
+      if (response.success) {
+        // Atualize a exibição do botão de entrega de acordo com a resposta
+        const button = document.querySelector(`.toggle-delivery[data-order-id="${orderId}"]`);
+        button.textContent = response.delivered ? 'Pedido entregue' : 'Entrega pendente';
+        button.disabled = true; // Desativa o botão após a alteração
+        const statusTextDelivery = document.querySelector(`#status-textDelivery-${orderId}`);
+        if (statusTextDelivery) {
+            statusTextDelivery.textContent = response.delivered ? 'Situação de entrega: Pedido entregue' : 'Situação de entrega: Entrega pendente';
+        }
+      }
+    }
+  };
+  xhr.send(JSON.stringify({ orderId: orderId }));
+}
+
+
+</script>

@@ -1,0 +1,22 @@
+<%- include('../partials/header.ejs') %>
+<div class="container">
+    <div class="card">
+        <div class="card-header">CADASTRAR NOVO CLIENTE</div>
+        <div class="card-body">            
+            <form method="POST" action="/customer/save">
+                <input name="name" class="form-control" type="text" placeholder="Nome do cliente"><br>
+                <input name="phone" class="form-control" type="text" placeholder="Telefone do cliente"><br>
+                <input name="email" class="form-control" type="text" placeholder="Email do cliente"><br>
+                <input name="cpf" class="form-control" type="text" placeholder="CPF do cliente"><br>
+                <input name="cnpj" class="form-control" type="text" placeholder="CNPJ do cliente"><br>
+                <input name="store" class="form-control" type="text" placeholder="Loja do cliente"><br>
+                <input name="zipcode" class="form-control" type="text" placeholder="CEP do cliente"><br>
+                <input name="adress" class="form-control" type="text" placeholder="Endereço do cliente"><br>
+                <input name="observation" class="form-control" type="text" placeholder="Observações do cliente"><br>
+                <button class="btn btn-success">Cadastrar</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+<%- include('../partials/footer.ejs') %>

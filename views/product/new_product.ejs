@@ -1,0 +1,15 @@
+<%- include('../partials/header.ejs') %>
+<div class="container">
+    <div class="card">
+        <div class="card-header">CADASTRAR NOVO PRODUTO</div>
+        <div class="card-body">            
+            <form method="POST" action="/product/save">
+                <input name="name" class="form-control" type="text" placeholder="Produto"><br>
+                <input name="price" class="form-control" type="text" placeholder="Preço"><br>
+                <button class="btn btn-success">Cadastrar produto</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+<%- include('../partials/footer.ejs') %>

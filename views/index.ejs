@@ -1,0 +1,303 @@
+<%- include('partials/header.ejs') %>
+<%- include('partials/nav.ejs') %>
+<style>
+    .nav-link {
+      cursor: pointer;
+    }
+  </style>
+<div class="container">
+    <ul style="flex-wrap: nowrap;" class="nav nav-tabs nav-fill mb-5">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" data-target="#conteudo-aba1">Produtos a produzir</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" data-target="#conteudo-aba2">Pedidos a entregar</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" data-target="#conteudo-aba3">Pedidos a receber</a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div id="conteudo-aba1" class="tab-pane fade show active">
+        <% if (Object.keys(aggregatedQuantities).length > 0) { %>
+        <table style="min-width: 100%;" class="rwd-table">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Quantidade</th>
+            </tr>
+          </thead>
+          <tbody>
+              <% for (const productId in aggregatedQuantities) { %>
+                <tr>
+                  <td><%= aggregatedQuantities[productId].productName %></td>
+                  <td><%= aggregatedQuantities[productId].quantity %></td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+            <% } else { %>
+              <hr>
+              <h2>Nenhum produto a ser produzido</h2>
+            <% } %>        
+      </div>
+      <div id="conteudo-aba2" class="tab-pane fade">
+        <div class="container">
+          <div class="card">
+              <div class="card-body">
+                  <div>
+                    <% const hasorder = orders.some(order => order.delivered === false); %>
+                    <% if(hasorder){ %>
+                      <% orders.forEach(order => { %>
+                        <% if (!order.delivered){%>   
+                          <div class="row">
+                            <div class="col text-center">
+                                <p>ID do pedido: <%= order.id %></p>
+                              </div>
+                              <div class="col text-center">
+                                <p id="status-text-<%= order.id %>"><%- order.payed ? '<i class="fas fa-money-check-alt" style="color: #10cf10;font-size: 22px;"></i>'+' Pedido pago' : '<i class="fas fa-money-check-alt" style="color: #fb0909;font-size: 22px;"></i>'+' Aguardando pagamento' %></p>
+                                </div>
+                                <div class="col text-center">
+                                <p id="status-textDelivery-<%= order.id %>"><%- order.delivered ?'<i class="fas fa-dolly" style="color:#10cf10;font-size: 22px"></i>'+' Pedido entregue' :'<i class="fas fa-dolly" style="color:#fb0909;font-size: 22px"></i>' + ' Entrega pendente' %></p>
+                              </div>
+                        </div>                                                
+                          <hr>
+                          <p>Cliente: <%= order.customer.name %></p>
+                          <p>Estabelecimento: <%= order.customer.store %></p> 
+                          <% const createdAt = order.createdAt; %>
+                              <% const day = createdAt.getDate().toString().padStart(2, '0'); %>
+                              <% const month = (createdAt.getMonth() + 1).toString().padStart(2, '0'); %>
+                              <% const year = createdAt.getFullYear().toString(); %>
+                              <% const hours = createdAt.getHours().toString().padStart(2, '0'); %>
+                              <% const minutes = createdAt.getMinutes().toString().padStart(2, '0'); %>
+                              <p>Pedido feito em: <%= day %>/<%= month %>/<%= year %> - <%= hours %>:<%= minutes %></p>
+                          <% const product_list = JSON.parse(order.product_list); %>
+                          <% let totalValue = 0; %>
+                          <% let totalprodutos = 0; %>
+
+                          <div style="border: 1px solid #00000017;padding: 5px 5px 0px 5px;box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;border-radius: 5px;margin-block: 15px;">
+                            <p><b>Produtos</b></p>
+                            <div style="padding-left: 15px;">
+                            <% product_list.forEach(product => { %>
+                              <p><%= product.product %> x <%= product.quantity %></p>
+                              <% totalValue += product.quantity * product.uniPrice; %>
+                              <% totalprodutos += product.quantity %>
+                            <% }); %>
+                          </div>
+                          <div>
+                            <p>Unidades: <%= totalprodutos %></p>
+                            <p>Valor do pedido: R$ <%= totalValue %></p>
+                          </div>
+                          </div>
+
+                          <div class="row">
+                              <div class="col-md-auto">
+                                  <button class="btn btn-success toggle-payment" data-order-id="<%= order.id %>">
+                                      <%= order.payed ?  'Marcar como não pago':'Marcar como pago'  %>
+                                    </button>
+                                  </div>
+                                    <div class="col-md-auto">
+                                      <button class="btn btn-success toggle-delivery" data-order-id="<%= order.id %>">
+                                        <%= order.delivered ? 'Marcar como não entregue' : 'Marcar como entregue'   %>
+                                      </button>
+                                    </div>                              
+                          </div>
+                          
+                          <div class="row">
+                            <div class="col">
+                              <a class="btn btn-success" href="https://www.google.com/maps/search/?api=1&query=<%=encodeURIComponent(order.customer.adress)%>" target="_blank">Ver rota</a>
+                            </div>
+                            <div class="col">
+                              <a class="btn btn-success">Falar com cliente</a>
+                            </div>
+                        </div>
+                          <hr>
+                          <%}%>   
+                        <% }); %>
+                    <%} else {%>
+                      <p>Todos os pedidos foram entregues</p>
+                      <%}%>
+                  </div>
+              </div>
+          </div>
+      </div>
+      </div>
+      <div id="conteudo-aba3" class="tab-pane fade">
+        <div class="card">
+          <div class="card-body">
+            <% const hasorderpayed = orders.some(order => order.payed === false); %>
+            <% if(hasorderpayed){ %>
+              <% orders.forEach(order => { %>
+                <% if (!order.payed){%>                                                            
+                  <div class="row">
+                    <div class="col text-center">
+                        <p>ID do pedido: <%= order.id %></p>
+                      </div>
+                      <div class="col text-center">
+                        <p id="status-text-<%= order.id %>"><%- order.payed ? '<i class="fas fa-money-check-alt" style="color: #10cf10;font-size: 22px;"></i>'+' Pedido pago' : '<i class="fas fa-money-check-alt" style="color: #fb0909;font-size: 22px;"></i>'+' Aguardando pagamento' %></p>
+                        </div>
+                        <div class="col text-center">
+                        <p id="status-textDelivery-<%= order.id %>"><%- order.delivered ?'<i class="fas fa-dolly" style="color:#10cf10;font-size: 22px"></i>'+' Pedido entregue' :'<i class="fas fa-dolly" style="color:#fb0909;font-size: 22px"></i>' + ' Entrega pendente' %></p>
+                      </div>
+                </div>                                                
+                  <hr>
+                  <p>Cliente: <%= order.customer.name %></p>
+                  <p>Estabelecimento: <%= order.customer.store %></p> 
+                  <% const createdAt = order.createdAt; %>
+                      <% const day = createdAt.getDate().toString().padStart(2, '0'); %>
+                      <% const month = (createdAt.getMonth() + 1).toString().padStart(2, '0'); %>
+                      <% const year = createdAt.getFullYear().toString(); %>
+                      <% const hours = createdAt.getHours().toString().padStart(2, '0'); %>
+                      <% const minutes = createdAt.getMinutes().toString().padStart(2, '0'); %>
+                      <p>Pedido feito em: <%= day %>/<%= month %>/<%= year %> - <%= hours %>:<%= minutes %></p>
+                  <% const product_list = JSON.parse(order.product_list); %>
+                  <% let totalValue = 0; %>
+                  <% let totalprodutos = 0; %>
+
+                  <div style="border: 1px solid #00000017;padding: 5px 5px 0px 5px;box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;border-radius: 5px;margin-block: 15px;">
+                    <p><b>Produtos</b></p>
+                    <div style="padding-left: 15px;">
+                    <% product_list.forEach(product => { %>
+                      <p><%= product.product %> x <%= product.quantity %></p>
+                      <% totalValue += product.quantity * product.uniPrice; %>
+                      <% totalprodutos += product.quantity %>
+                    <% }); %>
+                  </div>
+                  <div>
+                    <p>Unidades: <%= totalprodutos %></p>
+                    <p>Valor do pedido: R$ <%= totalValue %></p>
+                  </div>
+                  </div>
+
+                  <div class="row">
+                      <div class="col-md-auto">
+                          <button class="btn btn-success toggle-payment" data-order-id="<%= order.id %>">
+                              <%= order.payed ?  'Marcar como não pago':'Marcar como pago'  %>
+                            </button>
+                          </div>
+                            <div class="col-md-auto">
+                              <button class="btn btn-success toggle-delivery" data-order-id="<%= order.id %>">
+                                <%= order.delivered ? 'Marcar como não entregue' : 'Marcar como entregue'   %>
+                              </button>
+                            </div>                              
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col">
+                      <a class="btn btn-success" href="https://www.google.com/maps/search/?api=1&query=<%=encodeURIComponent(order.customer.adress)%>" target="_blank">Ver rota</a>
+                    </div>
+                    <div class="col">
+                      <a class="btn btn-success">Falar com cliente</a>
+                    </div>
+                </div>
+                  <hr>  
+                  <%}%>   
+                <% }); %>
+            <%} else {%>
+              <p>Todos os pedidos foram pagos</p>
+              <%}%>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+<%- include('partials/footer.ejs') %>
+
+<script>
+
+function refreshbd(){
+
+  $(document).ready(function() {
+  // Evento que dispara a requisição AJAX
+  $.ajax({
+      url: '/', // URL da rota no servidor que trata a requisição
+      type: 'GET',
+      success: function(response) {
+        // Manipula a resposta do servidor
+        // Atualize os elementos na página com os novos dados
+        $('#resultado').text(response);
+      },
+      error: function(error) {
+        // Manipula o erro, se ocorrer
+        console.error('Erro na requisição AJAX:', error);
+      }
+    });
+});
+}
+
+  const togglePaymentButtons = document.querySelectorAll('.toggle-payment');
+ togglePaymentButtons.forEach(button => {
+   button.addEventListener('click', function() {
+     const orderId = button.getAttribute('data-order-id');
+     const confirmMessage = 'Deseja alterar o status de pagamento do pedido?';
+     if (confirm(confirmMessage)) {
+       togglePaymentStatus(orderId);
+     }
+   });
+ });
+ 
+ const toggleDeliveryButtons = document.querySelectorAll('.toggle-delivery');
+ toggleDeliveryButtons.forEach(button => {
+   button.addEventListener('click', function() {
+     const orderId = button.getAttribute('data-order-id');
+     const confirmMessage = 'Deseja alterar o status de entrega do pedido?';
+     if (confirm(confirmMessage)) {
+       toggleDeliveryStatus(orderId);
+     }
+   });
+ });
+ 
+ function togglePaymentStatus(orderId) {
+   // Requisição AJAX para a rota no servidor
+   const xhr = new XMLHttpRequest();
+   xhr.open('POST', '/admin/toggle-payment-status');
+   xhr.setRequestHeader('Content-Type', 'application/json');
+   xhr.onload = function() {
+     if (xhr.status === 200) {
+       // Atualização bem-sucedida
+       const response = JSON.parse(xhr.responseText);
+       if (response.success) {
+         // Atualize a exibição do botão de pagamento de acordo com a resposta
+         const button = document.querySelector(`.toggle-payment[data-order-id="${orderId}"]`);
+         button.textContent = response.payed ? 'Pedido pago' : 'Aguardando pagamento';
+         button.disabled = true; // Desativa o botão após a alteração
+         // Dentro da função `toggleStatus` do seu código JavaScript
+         const statusText = document.querySelector(`#status-text-${orderId}`);
+         if (statusText) {
+             statusText.innerHTML = response.payed ? '<i class="fas fa-money-check-alt" style="color: #10cf10;font-size: 22px;"></i>'+' Pedido pago' : '<i class="fas fa-money-check-alt" style="color: #fb0909;font-size: 22px;"></i>'+' Aguardando pagamento';
+         }
+         refreshbd();
+       }
+     }
+   };
+   xhr.send(JSON.stringify({ orderId: orderId }));
+ }
+ 
+ function toggleDeliveryStatus(orderId) {
+   // Requisição AJAX para a rota no servidor
+   const xhr = new XMLHttpRequest();
+   xhr.open('POST', '/admin/toggle-delivery-status');
+   xhr.setRequestHeader('Content-Type', 'application/json');
+   xhr.onload = function() {
+     if (xhr.status === 200) {
+       // Atualização bem-sucedida
+       const response = JSON.parse(xhr.responseText);
+       if (response.success) {
+         // Atualize a exibição do botão de entrega de acordo com a resposta
+         const button = document.querySelector(`.toggle-delivery[data-order-id="${orderId}"]`);
+         button.textContent = response.delivered ? 'Pedido entregue' : 'Entrega pendente';
+         button.disabled = true; // Desativa o botão após a alteração
+         const statusTextDelivery = document.querySelector(`#status-textDelivery-${orderId}`);
+         if (statusTextDelivery) {
+             statusTextDelivery.innerHTML = response.delivered ? '<i class="fas fa-dolly" style="color:#10cf10;font-size: 22px"></i>'+' Pedido entregue' : '<i class="fas fa-dolly" style="color:#fb0909;font-size: 22px"></i>'+' Entrega pendente';
+         }
+       }
+     }
+   };
+   xhr.send(JSON.stringify({ orderId: orderId }));
+ }
+ 
+ 
+ </script>

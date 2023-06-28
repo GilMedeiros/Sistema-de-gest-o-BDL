@@ -1,0 +1,198 @@
+<%- include('../partials/header.ejs') %>
+<style>
+
+  .product-container,
+  .cart-container {
+    width: 100%;
+  }
+
+  ul#product-list {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  ul#product-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  ul#product-list li p {
+    margin: 0;
+    padding: 5px;
+  }
+
+  ul#product-list li input[type="number"] {
+    width: 60px;
+    margin-left: 10px;
+  }
+
+  ul#product-list li button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  table#cart {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  table#cart th,
+  table#cart td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  table#cart tfoot td {
+    text-align: right;
+  }
+
+  form {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  form label {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  form input[type="text"] {
+    width: 100%;
+    padding: 5px;
+  }
+
+  form button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+</style>
+
+<div class="container">
+  <div class="product-container">
+    <h2>Produtos</h2>
+    <ul id="product-list">
+      <% products.forEach(product => { %>
+      <li>
+        <p><%= product.name %></p>
+        <p> - R$ <%= product.price %></p>
+        <input type="number" min="0" value="0" id="quantity-<%= product.id %>">
+        <button onclick="addToCart(Number('<%=product.id%>'),'<%=product.name%>',Number('<%=product.price%>'))">Adicionar produto</button>
+      </li>
+      <% }); %>
+    </ul>
+  </div>
+
+  <div class="cart-container">
+    <h2>Carrinho</h2>
+    <table id="cart">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Quantidade</th>
+          <th>Valor Unitário</th>
+          <th>Valor Total</th>
+        </tr>
+      </thead>
+      <tbody id="cart-items"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">Valor Total do Carrinho:</td>
+          <td id="cart-total">R$ 0,00</td>
+        </tr>
+      </tfoot>
+    </table>
+    <form method="POST" action="/order/save">
+      <label>Observações do pedido</label><br>
+      <input type="text" name="observation">
+      <input id="product_list" type="hidden" name="product_list">
+      <input id="idCustomer" type="hidden" name="idCustomer" value="<%= id %>">
+      <button>Enviar pedido</button>
+    </form>
+  </div>
+</div>
+
+
+<script>
+
+// Armazena os itens do carrinho
+let cartItems = [];
+
+// Função para adicionar um produto ao carrinho
+function addToCart(productId,productName,productPrice) {
+  const quantityInput = document.getElementById(`quantity-${productId}`);
+  const quantity = parseInt(quantityInput.value);
+
+  if (quantity > 0) {
+    const product = {
+      id: productId,
+      product: productName,
+      quantity: quantity,
+      uniPrice: productPrice // Substitua pelo valor real do produto
+    };
+
+    cartItems.push(product);
+    updateCart();
+    saveCartToJson(); // Salva as informações do carrinho em JSON
+    quantityInput.value = 0;
+  }
+}
+
+// Função para excluir um item do carrinho
+function removeCartItem(index) {
+  cartItems.splice(index, 1);
+  updateCart();
+  saveCartToJson(); // Salva as informações do carrinho em JSON
+}
+
+// Função para salvar as informações do carrinho em um JSON
+function saveCartToJson() {
+  const jsonCart = JSON.stringify(cartItems);
+  document.getElementById("product_list").value = jsonCart;
+   //Pegar o "jsonCart" para enviar ao formulário
+}
+
+// Função para atualizar a exibição do carrinho
+function updateCart() {
+  const cartTable = document.getElementById("cart-items");
+  cartTable.innerHTML = "";
+
+  let cartTotal = 0;
+
+  cartItems.forEach((item, index) => {
+    const totalPrice = item.quantity * item.uniPrice;
+    cartTotal += totalPrice;
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${item.product}</td>
+      <td>${item.quantity}</td>
+      <td>R$ ${item.uniPrice.toFixed(2)}</td>
+      <td>R$ ${totalPrice.toFixed(2)}</td>
+      <td><button onclick="removeCartItem(${index})">Remover</button></td>
+    `;
+
+    cartTable.appendChild(row);
+  });
+
+  const cartTotalCell = document.getElementById("cart-total");
+  cartTotalCell.textContent = `R$ ${cartTotal.toFixed(2)}`;
+}
+
+// Função para limpar o carrinho
+function clearCart() {
+  cartItems = [];
+  updateCart();
+  saveCartToJson(); // Salva as informações do carrinho em JSON
+}
+
+</script>

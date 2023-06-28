@@ -1,0 +1,42 @@
+<%- include('../partials/header.ejs') %>
+<%- include('../partials/nav.ejs') %>
+<div class="container">
+    <div class="container">
+        <h1>Lista de clientes</h1>
+        <a href="/admin/clientes/novo" class="btn btn-success">Cadastrar novo cliente</a>
+        <br>
+        <br>
+        <ul class="list-group">
+          <% customers.forEach(customer => { %>
+            <li class="list-group-item">
+              <div style="box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px; border-radius: 10px; padding: 10px; margin-bottom: 20px;">
+                <h4><%= customer.name %></h4>
+                <p><strong>ID do cliente:</strong> <%= customer.id %></p>
+                <p><strong>Estabelecimento:</strong> <%= customer.store %></p>
+                <% if (customer.orders.length > 0) { %>
+                  <% const lastOrder = customer.orders[0]; %>
+                  <% const createdAt = lastOrder.createdAt; %>
+                  <% const day = createdAt.getDate().toString().padStart(2, '0'); %>
+                  <% const month = (createdAt.getMonth() + 1).toString().padStart(2, '0'); %>
+                  <% const year = createdAt.getFullYear().toString(); %>
+                  <p><strong>Data do último pedido:</strong> <%= day %>/<%= month %>/<%= year %></p>
+                <% } else { %>
+                  <p>Ainda não fez um pedido</p>
+                <% } %>
+                <div class="d-flex flex-wrap justify-content-start">
+                    <div class="col-auto">
+                      <a href="/admin/cliente/profile/<%= customer.id %>" class="btn btn-success">Ver perfil</a>
+                    </div>
+                    <div class="col-auto">
+                      <a href="/admin/pedidos/novo/<%= customer.id %>" class="btn btn-warning">Criar pedido</a>
+                    </div>
+
+                  </div>
+                  
+              </div>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+
+<%- include('../partials/footer.ejs') %>
