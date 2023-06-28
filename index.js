@@ -15,9 +15,9 @@ const PORT = process.env.PORT || 3000;
 
 //Configuração das sessões
 const sessionStore = new MySQLStore({
-    user: 'root',
-    password: '3154',
-    database: 'brownie_bd',
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASS,
+    database: process.env.MYSQL_BD,
     host: 'localhost',
     port: 3306,
     expiration: 86400000, // Tempo de expiração da sessão em milissegundos (24 horas)
@@ -25,7 +25,7 @@ const sessionStore = new MySQLStore({
   });
   
   app.use(session({
-    secret: 'aisdkojeruiofmsdfrgney',
+    secret: process.env.secret,
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
@@ -115,7 +115,7 @@ app.get('/backup',adminAuth, async (req, res) => {
       const filePath = `${backupDir}/${fileName}`;
   
       // Consulta SQL para gerar o dump completo do banco de dados
-      const dumpSQL = `mysqldump -u root -p3154 brownie_bd > "${filePath}"`;
+      const dumpSQL = `mysqldump -u root -p${process.env.MYSQL_PASS} ${process.env.MYSQL_BD} > "${filePath}"`;
   
       // Execução da consulta SQL para criar o backup
       exec(dumpSQL, async (error) => {
