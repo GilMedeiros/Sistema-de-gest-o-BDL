@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
@@ -8,7 +9,9 @@ const adminAuth = require("./middleware/adminauth");
 
 const fs = require('fs');
 const { exec } = require('child_process');
-  
+
+//Variável de ambiente
+const PORT = process.env.PORT || 3000;
 
 //Configuração das sessões
 const sessionStore = new MySQLStore({
@@ -138,6 +141,6 @@ app.get('/backup',adminAuth, async (req, res) => {
     }
   });
 
-//Database (conexão com banco de dados)
+//Conxeão
 connection.authenticate().then(() => {console.log('Conexão com banco de dados concluída')}).catch((error)=>{console.log(error)});
-app.listen(8080, () => {console.log("Servidor iniciado")});
+app.listen(PORT, () => {console.log("Servidor iniciado")});
