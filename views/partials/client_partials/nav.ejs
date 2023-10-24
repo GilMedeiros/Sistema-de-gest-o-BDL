@@ -1,0 +1,26 @@
+<div class="overlay" id="overlay"></div>
+<div class="navbar navbar-expand-lg navbar-light"></div>
+<div class="side-navbar" id="sidebar">
+  <div class="menu-top">
+    <img src="/images/BDLlogo.png" alt="Logo do Menu" class="menu-logo">
+    <p style="color: white;">Olá, <%=customer.name%>. Você está logado no gestor de pedidos.</p>
+    <a href="/logout_client" class="btn btn-warning">Sair</a>
+  </div>
+  
+  <ul class="nav flex-column text-white">
+    <li class="nav-item">
+      <a href="/home" class="menu-item nav-link">Home</a>
+    </li>
+    <li class="nav-item">
+      <a href="/historico" class="menu-item nav-link" style="background-color:#5a00b3eb;font-weight: 600;">Histórico de pedidos</a>
+    </li>
+    
+    <li class="nav-item">
+      <a href="/perfil" class="menu-item nav-link">Meu perfil</a>
+    </li>
+  </ul>
+</div>
+<div class="content">
+    <a id="menu-btn" href="#"><i style="background: #9f26ca;
+      padding: 3px 6px 3px 6px;border-radius: 3px;color:#ffffff" class="fas fa-bars"></i></a>
+</div>

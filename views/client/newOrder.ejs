@@ -1,0 +1,177 @@
+<%- include('../partials/client_partials/header.ejs') %>
+<%- include('../partials/client_partials/nav.ejs') %>
+
+<style>
+    .center-box{
+    width: 800px;
+    padding: 10px;
+}
+.tile-box{
+        background-color: white;
+        width: 100%;
+        border-radius: 10px 10px 10px 10px;
+        padding: 40px;
+        /* justify-content: space-around;
+        flex-direction: row;
+        display: flex; */
+}
+.headerbox{
+        border-radius: 6px 6px 0px 0px;
+        background-color: #6926D7;
+        padding: 6px 20px 6px 20px;
+        color: white;
+        max-width: 250px;
+}
+.product-image{
+    max-width: 250px;
+}
+.product-box{
+    margin: 10px;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    border-radius: 6px;
+}
+.product-box .price{
+    color: #333;
+    font-size: 16pt;
+    font-style: normal;
+    font-weight: 600;
+}
+.btn-login{
+            padding: 7px;
+            margin-block: 15px;
+            border: none;
+            border-radius: 4px;
+            box-shadow: rgb(0 0 0 / 30%) 0px 4px 10px;
+            font-weight: 600;
+            color: #fff !important;
+            font-size: 16pt;
+            background: #22d63f;
+        }
+</style>
+<body>
+    <div class="d-flex justify-content-center">
+        <div class="center-box">
+            <div class="d-flex align-content-center flex-wrap justify-content-between tile-box">
+                <% products.forEach(product => { %>
+                    <div class="product-box">
+                        <div class="headerbox">
+                            <span><%= product.name %></span>
+                        </div>
+                        <div class="product-image">
+                            <img src="<%=product.imageURL%>"style="object-fit: cover;width: 100%;">
+                        </div>
+                        <div class="text-center price">
+                            <span>Valor: R$ <%= product.price %></span>
+                        </div>
+                        <div class="quantity">
+                            <span>Quantidade:</span>
+                            <input type="number" min="0" value="0" id="quantity-<%= product.id %>" style="width: 50px;">
+                        </div>
+                        <button class="btn btn-login" onclick="addToCart(Number('<%=product.id%>'),'<%=product.name%>',Number('<%=product.price%>'))">Adicionar produto</button>
+                        <!-- <a href="/novopedido" class="btn btn-login">Fazer pedido</a> -->
+                    </div>
+               <% }) %>
+            </div>
+            <div style="flex-direction: column;color: #000;font-size: 16px;font-family: Montserrat;font-style: normal;font-weight: 500;line-height: 20px;" class="mt-4 d-flex align-content-start flex-wrap justify-content-between tile-box">
+                <p>RESUMO DO PEDIDO</p>
+                <div id="cart-items"></div>
+                <p id="cart-total">Total do pedido: R$ 0.00</p>
+            </div>
+                <form method="POST" action="/order/save" class="my-3">
+                    <label style="color: white;">Observações do pedido</label><br>
+                    <input class="form-control" type="textarea" name="observation">
+                    <input id="product_list" type="hidden" name="product_list">
+                    <input id="idCustomer" type="hidden" name="idCustomer" value="<%= id %>">
+                    <button style="width: 100%;padding: 17px;" class="btn btn-login" id="botaosubmit">Enviar pedido</button>
+                </form>
+        </div>
+    </div>
+</body>
+<%- include('../partials/client_partials/footer.ejs') %>
+
+<script>
+
+    // Armazena os itens do carrinho
+    let cartItems = [];
+    //Ativa e desativa o botão Submit
+    function disablebutton() {
+      var botao = document.getElementById('botaosubmit');
+      if(cartItems.length === 0){
+        botao.disabled = true;
+      }else{
+        botao.disabled = false;
+      }
+    }
+    // Função para adicionar um produto ao carrinho
+    function addToCart(productId,productName,productPrice) {
+      const quantityInput = document.getElementById(`quantity-${productId}`);
+      const quantity = parseInt(quantityInput.value);
+    
+      if (quantity > 0) {
+        const product = {
+          id: productId,
+          product: productName,
+          quantity: quantity,
+          uniPrice: productPrice // Substitua pelo valor real do produto
+        };
+    
+        cartItems.push(product);
+        updateCart();
+        saveCartToJson(); // Salva as informações do carrinho em JSON
+        quantityInput.value = 0;
+      }
+    }
+    
+    // Função para excluir um item do carrinho
+    function removeCartItem(index) {
+      cartItems.splice(index, 1);
+      updateCart();
+      saveCartToJson(); // Salva as informações do carrinho em JSON
+    }
+    
+    // Função para salvar as informações do carrinho em um JSON
+    function saveCartToJson() {
+      const jsonCart = JSON.stringify(cartItems);
+      document.getElementById("product_list").value = jsonCart;
+      disablebutton();
+       //Pegar o "jsonCart" para enviar ao formulário
+    }
+    
+// Função para atualizar a exibição do carrinho
+function updateCart() {
+  const cartTable = document.getElementById("cart-items");
+  cartTable.innerHTML = "";
+
+  let cartTotal = 0;
+
+  cartItems.forEach((item, index) => {
+    const totalPrice = item.quantity * item.uniPrice;
+    cartTotal += totalPrice;
+
+    const row = document.createElement("p");
+    row.innerHTML = `
+    <hr>
+      <span>${item.product} | ${item.quantity}x - Total: R$ ${totalPrice.toFixed(2)}</span>
+      <button class="btn btn-danger" onclick="removeCartItem(${index})">Remover</button>
+      <hr>
+    `;
+
+    cartTable.appendChild(row);
+  });
+
+  const cartTotalCell = document.getElementById("cart-total");
+  cartTotalCell.textContent = `Total do pedido: R$ ${cartTotal.toFixed(2)}`;
+}
+
+    
+    // Função para limpar o carrinho
+    function clearCart() {
+      cartItems = [];
+      updateCart();
+      saveCartToJson(); // Salva as informações do carrinho em JSON
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+    disablebutton();
+  });
+    </script>

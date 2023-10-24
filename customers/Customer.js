@@ -6,6 +6,10 @@ const Customer = connection.define('customers',{
         type: Sequelize.STRING,
         allowNull: false
     },
+    full_name:{
+        type:Sequelize.STRING,
+        defaultValue:'Nome não completo',
+    },
     phone:{
         type: Sequelize.STRING,
         allowNull: false
@@ -38,13 +42,10 @@ const Customer = connection.define('customers',{
         type: Sequelize.TEXT,
         defaultValue: "Sem observações"
     },
-    customer_orders:{
-        type: Sequelize.JSON,
-        defaultValue: {}
-    },
-    customer_insertion:{
-        type: Sequelize.DATEONLY,
-        defaultValue: Sequelize.NOW
+    password:{
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: "cadastrarnovasenha"
     }
 
 });

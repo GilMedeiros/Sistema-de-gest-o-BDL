@@ -14,7 +14,11 @@ router.get("/admin/users/create",adminAuth, (req,res) => {
 });
 
 router.get("/admin/login",(req,res) => {
-    res.render("user/login")
+    if(req.session.user != undefined){
+        res.redirect("/admin/console")
+    }else{
+        res.render("user/login")
+    }
 });
 
 //Rotas POST

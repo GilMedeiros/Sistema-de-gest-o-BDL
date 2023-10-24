@@ -9,6 +9,10 @@ const Product = connection.define('products',{
     price:{
         type: Sequelize.DECIMAL(10, 2),
         allowNull: false
+    },
+    imageURL:{
+        type: Sequelize.STRING,
+        allowNull:true
     }
 
 });

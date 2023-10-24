@@ -63,7 +63,7 @@ app.use("/",usersController);
 //Rotas
 
 app.get("/",(req,res) => {
-    res.render("user/login")
+    res.render("index")
 });
 
 app.get("/admin/console",adminAuth, async (req,res) => {
@@ -90,7 +90,7 @@ app.get("/admin/console",adminAuth, async (req,res) => {
                 });
             }           
     });
-    res.render('index',{
+    res.render('console',{
         orders,aggregatedQuantities
     });
 } catch (error){
@@ -140,6 +140,11 @@ app.get('/backup',adminAuth, async (req, res) => {
       res.status(500).send('Erro ao gerar o backup do banco de dados');
     }
   });
+
+  // Middleware para tratamento do erro 404
+app.use(function(req, res, next) {
+  res.status(404).send('Página não encontrada, entre em contato com o ADM');
+});
 
 //Conxeão
 connection.authenticate().then(() => {console.log('Conexão com banco de dados concluída')}).catch((error)=>{console.log(error)});

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brownie de Lei</title>
+    <title>Gerenciador Brownie de Lei</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-...seu código de integridade..." crossorigin="anonymous" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
         <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
@@ -20,6 +20,20 @@
             background-position-x: right;
             height: 100%;
         }
+        input{
+            padding: 13px;
+            background-color: transparent;
+            border: 1px solid white;
+            border-radius: 4px;
+            color: white;
+            width: 100%;
+            margin-top: 13px;
+            font-weight: 300;
+            
+        }
+        ::placeholder{
+            color: white;
+        }
         .btn-login{
             margin-top: 43px;
             width: 100%;
@@ -28,21 +42,21 @@
             border-radius: 4px;
             box-shadow: rgb(0 0 0 / 30%) 0px 4px 10px;
             font-weight: 600;
-            color: #8D21C0 !important;
+            color: #8D21C0;
             font-size: 16pt;
-            background: white;
-        }
-        h5{
-            color: white;
         }
     </style>
 <body>
     <div class="h-100 d-flex justify-content-center align-items-center">
         <div class="text-center" style="width: 300px;">
             <img style="max-width:150px" src="../../images/BDLlogo.png" alt="">
-            <h5>Fazer login como</h5>
-            <a href="/login" class="btn btn-login">Cliente</a>
-            <a href="/admin/login" class="btn btn-login">Administrador</a>
+            <form action="/welcome_customer" method="POST">
+                <input autocomplete="off" role="presentation" type="email" id="email" name="email" placeholder="Digite seu e-mail">
+                <br>
+                <input autocomplete="off" role="presentation" type="text" id="cpf" name="cpf" placeholder="Digite seu CPF">
+                <br>
+                <button class="btn-login">AVANÇAR</button>
+            </form>
         </div>
     </div>
 </body>

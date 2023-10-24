@@ -48,7 +48,12 @@ router.post("/order/save", (req,res) => {
         product_list: product_list,
         idCustomer: idCustomer,
     }).then(() => {
+      if(req.session.user){
         res.redirect("/admin/pedidos")
+      } else if(req.session.customer){
+        res.redirect("/home")
+      }
+        
     });
 });
 

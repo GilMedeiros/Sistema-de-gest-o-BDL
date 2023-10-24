@@ -5,6 +5,7 @@
         <div class="card-body">            
             <form method="POST" action="/customer/edit">
                 <input name="name" class="form-control" type="text" placeholder="Nome do cliente" value="<%= customer.name %>"><br>
+                <input name="full_name" class="form-control" type="text" placeholder="Nome completo" value="<%= customer.full_name %>"><br>
                 <input name="phone" class="form-control" type="text" placeholder="Telefone do cliente" value="<%= customer.phone %>"><br>
                 <input name="email" class="form-control" type="text" placeholder="Email do cliente" value="<%= customer.email %>"><br>
                 <input name="cpf" class="form-control" type="text" placeholder="CPF do cliente" value="<%= customer.cpf %>"><br>

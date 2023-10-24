@@ -1,0 +1,137 @@
+<%- include('../partials/client_partials/header.ejs') %>
+<%- include('../partials/client_partials/nav.ejs') %>
+<style>
+    .center-box{
+        width: 800px;
+        padding: 10px;
+    }
+    .dent{
+        background-color: white;
+        border-radius: 12px 12px 0px 0px;
+        border-top: 1px solid #ECECEC;
+        border-right: 1px solid #ECECEC;
+        border-left: 1px solid #ECECEC;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        padding: 10px 20px 0px 20px;
+        font-size: 14pt;
+        margin-top: auto;
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+    }
+    .tile-box{
+        background-color: white;
+        width: 100%;
+        border-radius: 0px 10px 10px 10px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        font-family: 'Montserrat', sans-serif;
+    }
+    .header-box{
+        display: flex;
+        flex-direction: row;
+        font-family: 'Montserrat', sans-serif;
+    }
+    .tile{
+        box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.15);
+        width: 100%;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-family: 'Montserrat', sans-serif;
+    }
+    .tile .header{
+        border-radius: 6px 6px 0px 0px;
+        background-color: #6926D7;
+        padding: 6px 20px 6px 20px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+    }
+    .order-details{
+        padding: 20px;
+    }
+    .product-list{
+        box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.07);
+        background-color: #FBFBFB;
+        padding: 10px;
+    }
+    .product-list span{
+        margin-left: 5px;
+        display: flex;
+        flex-direction: column;
+    }
+    .tile-box p{
+        color: #000;
+        font-size: 15pt;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 19px;
+        font-family: 'Montserrat', sans-serif;
+    }
+    .tile-box span{
+        color: #333;
+        font-size: 13pt;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 19px;
+        font-family: 'Montserrat', sans-serif;
+    }
+    .btn-login{
+            padding: 10px 20px 10px 20px;
+            border: none;
+            font-weight: 600;
+            color: #fff !important;
+            font-size: 16pt;
+            border-radius: 4px;
+            background: #747474;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.30);
+    }
+</style>
+<body>
+    <div class="d-flex justify-content-center">
+            <div class="center-box">
+                <div class="header-box">
+                    <div class="dent">
+                        <i class="fas fa-user-edit" style="color: #8d21c0;margin:5px"></i>
+                        <p>Editar perfil</p>
+                    </div>
+                </div>
+                <div class="tile-box">
+                    <form action="/customer/edit" method="post">
+                        <p>Informações de contato</p>
+                        <input required name="name" class="form-control" type="text" placeholder="Nome do cliente" value="<%= customer.name %>">
+
+                        <input required name="full_name" class="form-control" type="text" placeholder="Nome completo" value="<%= customer.full_name %>">
+
+                        <input required name="phone" class="form-control" type="text" placeholder="Telefone do cliente" value="<%= customer.phone %>">
+                        
+                        <input required name="email" class="form-control" type="text" placeholder="Email do cliente" value="<%= customer.email %>">
+                        <br>
+                        <p>Endereço</p>
+
+                        <input required name="adress" class="form-control" type="text" placeholder="Endereço do cliente" value="<%= customer.adress %>">
+
+                        <input required name="zipcode" class="form-control" type="text" placeholder="CEP do cliente" value="<%= customer.zipcode %>">                        
+                        <br>
+                        <p>Informações adicionais</p>
+                        
+                        <input required name="cpf" class="form-control" type="text" placeholder="CPF do cliente" value="<%= customer.cpf %>">
+                        
+                        <input required name="cnpj" class="form-control" type="text" placeholder="CNPJ do cliente" value="<%= customer.cnpj %>">
+
+                        <input required name="store" class="form-control" type="text" placeholder="Loja do cliente" value="<%= customer.store %>">
+                        <input required name="observation" class="form-control" type="hidden" placeholder="Observações do cliente" value="<%= customer.observation %>">
+                        <input type="hidden" name="id" value="<%= customer.id %>">
+                        <button class="my-4 btn btn-success">Atualizar</button> 
+                    </form>
+                </div>
+            </div>
+    </div>
+</body>
+
+<%- include('../partials/client_partials/footer.ejs') %>
