@@ -30,6 +30,11 @@
 https://github.com/GilMedeiros/Sistema-de-gest-o-BDL/assets/52362659/f94e6e90-0986-4446-8a8b-ae0707fc5252
 
 
+<h3>Demonstrativo do cliente</h3>
+
+https://github.com/GilMedeiros/Sistema-de-gest-o-BDL/assets/52362659/d1f097c7-2eb8-4591-bba3-f7f72c8bb48f
+
+
 <h4>#Funcionalidades do painel administrativo</h4>
 
 - Adicionar/modificar clientes
